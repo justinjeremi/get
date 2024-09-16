@@ -1,22 +1,22 @@
+from picamera2 import Picamera2, Preview
 import io
 import time
-from picamera2 import Picamera2, Preview
 from flask import Flask, Response
 
 app = Flask(__name__)
 
 # Initialize Picamera2
 camera = Picamera2()
-camera.configure(camera.create_still_configuration())
+camera.configure(camera.create_video_configuration(main={"size": (640, 480)}))
 camera.start()
 
 def generate_frames():
-    # Create an in-memory stream
-    stream = io.BytesIO()
-    
     while True:
+        # Create an in-memory stream
+        stream = io.BytesIO()
+
         # Capture a frame to the in-memory stream
-        camera.capture(stream, format='jpeg', use_video_port=True)
+        camera.capture(stream, format='jpeg')
         
         # Rewind the stream to the beginning
         stream.seek(0)
@@ -52,4 +52,9 @@ def index():
     '''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    try:
+        app.run(host='0.0.0.0', port=5000, debug=True)
+    finally:
+        # Ensure the camera is stopped when the application is stopped
+        camera.stop()
+
