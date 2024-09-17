@@ -2,10 +2,8 @@ from picamera2 import Picamera2, Preview
 import io
 import time
 from flask import Flask, Response
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests
 
 # Initialize Picamera2
 camera = Picamera2()
